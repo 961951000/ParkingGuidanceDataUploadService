@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
+using ParkingGuidanceDataUploadService.Helper;
 using ParkingGuidanceDataUploadService.Interface;
 using ParkingGuidanceDataUploadService.Models;
 
@@ -29,21 +30,21 @@ namespace ParkingGuidanceDataUploadService
             {
                 try
                 {
-                    var query = await _db.QueryAsync<ParkingLotInfo>("SELECT [CountCw],[StopCw],[PrepCw] FROM [dbo].[Tc_ParkingLotInfo] WHERE ParkingLotName = 'B2'");
+                    var query = await _db.QueryAsync<ParkingLotInfo>("SELECT 3401030036 as ParkId,[CountCw],[PrepCw] FROM [dbo].[Tc_ParkingLotInfo] WHERE ParkingLotName = 'B2'");
                     var info = query.FirstOrDefault();
-                    var url = $"http://park.hfcsbc.cn:8080/parkScreenPMS/ReceiveParkNum.action?parkId={@"停车场ID"}&total={info?.CountCw}&Surplus={info?.PrepCw}";
-                    Console.WriteLine($"Upload Url: {url}");
+                    var url = $"http://park.hfcsbc.cn:8080/parkScreenPMS/ReceiveParkNum.action?parkId={info?.ParkId}&total={info?.CountCw}&Surplus={info?.PrepCw}";
                     const string testUrl = "http://park.hfcsbc.cn:8080/parkScreenPMS/ReceiveParkNum.action?parkId=3401030036&total=1192&Surplus=800";
-                    Console.WriteLine($"Test Upload: {testUrl}");
+
                     var client = new HttpClient();
                     var result = await client.GetStringAsync(testUrl);
-                    var obj = JsonConvert.DeserializeObject<dynamic>(result);
-                    obj.timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    Console.WriteLine($"result: {JsonConvert.SerializeObject(obj)}");
+
+                    Console.WriteLine($"入参: {JsonConvert.SerializeObject(info)}{Environment.NewLine}出参: {result}{Environment.NewLine}操作时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                    Logger.Info($"请求：   {url}{Environment.NewLine}响应：   {result}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
+                    Logger.Error(ex);
                 }
                 finally
                 {
