@@ -30,7 +30,7 @@ namespace ParkingGuidanceDataUploadService
             {
                 try
                 {
-                    var query = await _db.QueryAsync<ParkingLotInfo>("SELECT 3401030036 as ParkId,[CountCw],[PrepCw] FROM [dbo].[Tc_ParkingLotInfo] WHERE ParkingLotName = 'B2'");
+                    var query = await _db.QueryAsync<ParkingLotInfo>("SELECT 3401030036 as [ParkId],[CountCw],[PrepCw] FROM [dbo].[Tc_ParkingLotInfo] WHERE ParkingLotName = 'B2'");
                     var info = query.FirstOrDefault();
                     var url = $"http://park.hfcsbc.cn:8080/parkScreenPMS/ReceiveParkNum.action?parkId={info?.ParkId}&total={info?.CountCw}&Surplus={info?.PrepCw}";
                     const string testUrl = "http://park.hfcsbc.cn:8080/parkScreenPMS/ReceiveParkNum.action?parkId=3401030036&total=1192&Surplus=800";
@@ -38,7 +38,8 @@ namespace ParkingGuidanceDataUploadService
                     var client = new HttpClient();
                     var result = await client.GetStringAsync(testUrl);
 
-                    Console.WriteLine($"入参: {JsonConvert.SerializeObject(info)}{Environment.NewLine}出参: {result}{Environment.NewLine}操作时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                    var testInfo = await _db.QueryAsync<ParkingLotInfo>("SELECT 3401030036 as [ParkId],1192 as [CountCw],800 as[PrepCw] FROM [dbo].[Tc_ParkingLotInfo] WHERE ParkingLotName = 'B2'");
+                    Console.WriteLine($"入参: {JsonConvert.SerializeObject(testInfo)}{Environment.NewLine}出参: {result}{Environment.NewLine}操作时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
                     Logger.Info($"请求：   {url}{Environment.NewLine}响应：   {result}");
                 }
                 catch (Exception ex)
