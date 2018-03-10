@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
-using ParkingGuidanceDataUploadService.Helper;
 using ParkingGuidanceDataUploadService.Interface;
 using ParkingGuidanceDataUploadService.Models;
 
